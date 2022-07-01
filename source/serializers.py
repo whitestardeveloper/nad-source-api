@@ -11,7 +11,7 @@ class MaterialListSerializer(serializers.ModelSerializer):
 class ProductListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields= ['id', 'name', 'category_id', 'image','priority']
+        fields= ['id', 'name','description', 'category_id', 'image','priority']
 
 
 
@@ -63,7 +63,7 @@ class CategoryListSerializer(serializers.ModelSerializer):
     # product_count = Category.objects.all().annotate(product_count=Product('category'))
     class Meta:
         model = Category
-        fields = ['id', 'name', 'description', 'image', 'parent_id','priority']
+        fields = ['id', 'name', 'image', 'parent_id','priority']
         depth = 1
 
 # class CategoryAllSerializer(CategorySerializer):
