@@ -55,7 +55,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
     # altarnative_products = serializers.SerializerMethodField()
     class Meta:
         model = Product
-        fields= ['id','name','image','category_id','created_at','updated_at','rozets','ingredients','altarnative_products']
+        fields= ['id','name', 'description', 'image','category_id','created_at','updated_at','rozets','ingredients','altarnative_products']
         depth = 1
 
 
@@ -63,7 +63,7 @@ class CategoryListSerializer(serializers.ModelSerializer):
     # product_count = Category.objects.all().annotate(product_count=Product('category'))
     class Meta:
         model = Category
-        fields = ['id', 'name', 'image', 'parent_id','priority']
+        fields = ['id', 'name', 'description', 'image', 'parent_id','priority']
         depth = 1
 
 # class CategoryAllSerializer(CategorySerializer):
