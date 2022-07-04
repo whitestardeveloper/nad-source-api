@@ -20,6 +20,12 @@ def index(request):
 class CategoriesViewSet(generics.ListCreateAPIView):
     queryset = Category.objects.all()
     serializer_class = CategoryListSerializer
+    filter_backends = [
+        filters.SearchFilter,
+        filters.OrderingFilter,
+        DjangoFilterBackend,
+    ]
+    search_fields = ['name',]
     filterset_fields = ['parent_id','name','is_leaf','level']
 
     def get(self, request, *args, **kwargs):
@@ -101,15 +107,28 @@ class CategoryDetailViewSet(generics.RetrieveUpdateDestroyAPIView):
 
 
 ################
+@ method_decorator(csrf_exempt, name='dispatch')
 class MaterialsViewSet(generics.ListAPIView):
     queryset = Material.objects.all()
     serializer_class = MaterialListSerializer
-    filterset_fields = ['product_id',]
+    filter_backends = [
+        filters.SearchFilter,
+        filters.OrderingFilter,
+        DjangoFilterBackend,
+    ]
+    search_fields = ['name',]
 
 ################
+@ method_decorator(csrf_exempt, name='dispatch')
 class ProductViewSet(generics.ListAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductListSerializer
+    filter_backends = [
+        filters.SearchFilter,
+        filters.OrderingFilter,
+        DjangoFilterBackend,
+    ]
+    search_fields = ['name',]
     filterset_fields = ['category_id',]
 
 ################

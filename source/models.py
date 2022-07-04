@@ -66,7 +66,7 @@ class Product(models.Model):
     ingredients = models.ManyToManyField(Material, blank=True, through='ProductMaterial',related_name='ingredients')
     description = models.TextField(null=True,blank=True)
     priority = models.SmallIntegerField(default=1)
-    altarnative_products = models.ManyToManyField("self", blank=True,through='AltarnativeProduct', related_name='altarive_products', symmetrical=False)
+    altarnative_products = models.ManyToManyField("self", blank=True, through='AltarnativeProduct', symmetrical=True)
     rozets = MultiSelectField(choices=PRODUCT_ROZETS)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

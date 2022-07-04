@@ -20,6 +20,8 @@ class MaterialAdmin(admin.ModelAdmin):
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
+    autocomplete_fields =['parent',]
+    search_fields = ['name',]
     prepopulated_fields = {"slug": ("name",)}
 
 
@@ -32,16 +34,16 @@ class ProductMaterialInline(admin.TabularInline):
 
 class AltarnativeProductInline(admin.TabularInline):
     model = AltarnativeProduct
-    autocomplete_fields =['product',]
+    autocomplete_fields =['altarnative_product',]
     extra = 0
-    fk_name = 'altarnative_product'
+    fk_name = 'product'
 
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     # search_fields = ("id", )
     # autocomplete_fields = ('ingredients',)
-    search_fields = ['material','product',]
+    search_fields = ['name',]
     filter_horizontal = ('ingredients', 'altarnative_products')
     inlines = (ProductMaterialInline, AltarnativeProductInline)
 

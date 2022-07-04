@@ -1,5 +1,3 @@
-from dataclasses import fields
-from itertools import product
 from rest_framework import serializers
 from .models import Category, Material, Product, AltarnativeProduct, ProductMaterial
 
@@ -22,10 +20,10 @@ class ProductMaterialListSerializer(serializers.ModelSerializer):
         model = ProductMaterial
         fields= '__all__'
 
-# class AltarnativeProductListSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = AltarnativeProduct
-#         fields= '__all__'
+class AltarnativeProductListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AltarnativeProduct
+        fields= '__all__'
 
 class ProductDetailSerializer(serializers.ModelSerializer):
     # ingredients = serializers.SerializerMethodField()
@@ -49,9 +47,41 @@ class ProductDetailSerializer(serializers.ModelSerializer):
     #         ingredientList.append(details)
 
     #     return ingredientList
+    
+    # altarnative_products = AltarnativeProductListSerializer(read_only=True, many=True)
+    # ingredients = MaterialListSerializer(read_only=True, many=True)
+    
+    altarnative_products = serializers.SerializerMethodField(read_only=True)
+    def get_altarnative_products(self, model):
+        altarnativeProductList = []
+        for item in model.altarnative_products.all().order_by('altarnative_product__priority'):
+            details = {}
+            details['id'] = item.id
+            details['name'] = item.name
+            details['description'] = item.description
+            details['category_id'] = item.category_id
+            if item.image:
+                details['image'] = item.image.url
+            else:
+                details['image'] = None
+            altarnativeProductList.append(details)
 
-    ingredients = MaterialListSerializer(read_only=True, many=True)
-    altarnative_products = ProductListSerializer(read_only=True, many=True)
+        return altarnativeProductList
+        # def get_image(img):
+        #     if(img):
+        #         return img.url
+        #     else:
+        #         return None
+
+        # data = [{'id':altarnative_products.id, 'name':altarnative_products.name, 'category_id': altarnative_products.category_id,'description': altarnative_products.description, 'image': get_image(altarnative_products.image) } for altarnative_products in model.altarnative_products.all().order_by('altarnative_products__priority')]
+        # print(data)
+        # return data
+
+    ingredients = serializers.SerializerMethodField(read_only=True)
+    def get_ingredients(self, model):
+        data = [{'id':ingredients.id, 'name':ingredients.name, 'description': ingredients.description } for ingredients in model.ingredients.all().order_by('productmaterial__priority')]
+        return data
+
     # altarnative_products = serializers.SerializerMethodField()
     class Meta:
         model = Product
