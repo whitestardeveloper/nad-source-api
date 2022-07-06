@@ -19,13 +19,13 @@ class Category(MPTTModel):
     # image = CloudinaryField("Image",overwrite=True,resource_type="image",transformation={"quality": "auto:eco"})
 
     def __str__(self):     
-        return self.name                      
-        # full_path = [self.name]                  
-        # k = self.parent
-        # while k is not None:
-        #     full_path.append(k.name)
-        #     k = k.parent
-        # return ' -> '.join(full_path[::-1])
+        # return self.name                      
+        full_path = [self.name]                  
+        k = self.parent
+        while k is not None:
+            full_path.append(k.name)
+            k = k.parent
+        return ' -> '.join(full_path[::-1])
 
     class MPTTMeta:
         order_insertion_by=['priority']
