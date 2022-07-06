@@ -10,7 +10,7 @@ from django_cleanup import cleanup
 @cleanup.ignore
 class Category(MPTTModel):
     parent = models.ForeignKey('self', blank=True, null=True, related_name='children', on_delete=models.CASCADE)
-    name = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255)
     slug = models.SlugField()
     priority = models.SmallIntegerField(default=1)
     updated_at = models.DateTimeField(auto_now=True)
