@@ -108,7 +108,7 @@ class CategoryDetailViewSet(generics.RetrieveUpdateDestroyAPIView):
 
 ################
 @ method_decorator(csrf_exempt, name='dispatch')
-class MaterialsViewSet(generics.ListAPIView):
+class MaterialsViewSet(generics.ListCreateAPIView):
     queryset = Material.objects.all()
     serializer_class = MaterialListSerializer
     filter_backends = [
@@ -120,7 +120,7 @@ class MaterialsViewSet(generics.ListAPIView):
 
 ################
 @ method_decorator(csrf_exempt, name='dispatch')
-class ProductViewSet(generics.ListAPIView):
+class ProductViewSet(generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductListSerializer
     filter_backends = [
@@ -130,6 +130,7 @@ class ProductViewSet(generics.ListAPIView):
     ]
     search_fields = ['name',]
     filterset_fields = ['category_id',]
+
 
 ################
 @method_decorator(csrf_exempt, name='dispatch')

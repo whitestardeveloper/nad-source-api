@@ -180,6 +180,7 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 20
 }
 
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 35000 # higher than the count of fields
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/

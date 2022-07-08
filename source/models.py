@@ -39,8 +39,13 @@ class Category(MPTTModel):
 
 
 class Material(models.Model):
-    name = models.CharField(max_length=200)
-    description = models.CharField(max_length=1000)
+    name = models.CharField(max_length=2500)
+    description = models.TextField(null=True,blank=True)
+    cas_no =  models.CharField(max_length=200, null=True, blank=True)
+    ec_no =  models.CharField(max_length=200, null=True, blank=True)
+    europa_eu_id = models.CharField(max_length=200, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
     # inhaleIndex = models.IntegerField(default=1)
     # swallowIndex = models.IntegerField(default=1)
     # contactIndex = models.IntegerField(default=1)
@@ -48,8 +53,9 @@ class Material(models.Model):
     def __str__(self):
         return self.name
 
-    class Meta: 
-        verbose_name=('Mataryel')
+    class Meta:
+        unique_together = ('cas_no', 'europa_eu_id')   
+        verbose_name = ('Mataryel')
         verbose_name_plural=('Materyeller')
 
 
