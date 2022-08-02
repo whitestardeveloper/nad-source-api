@@ -141,8 +141,8 @@ WSGI_APPLICATION = 'ws_source.wsgi.application'
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 DATABASES = {
-    'default': os.environ.get('DATABASE_URL', default='postgres://nad_2023:nad.2023@93.115.79.32:5432/nad_source')
-    #'default': env.db(),
+    #'default': os.environ.get('DATABASE_URL', default='postgres://nad_2023:nad.2023@93.115.79.32:5432/nad_source')
+    'default': env.db(),
 }
 
 
