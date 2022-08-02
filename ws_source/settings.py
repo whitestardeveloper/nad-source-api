@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
+from email.policy import default
 from pathlib import Path
 import warnings
 import environ, os
@@ -68,13 +69,13 @@ environ.Env.read_env(env_file='{0}/.env'.format(BASE_DIR))
 
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = os.environ.get('SECRET_KEY', default='django-insecure-nq5@o+af^xr7%f=s-c-@$omm096(%w+yemk(6#%tu63n&up4d8')
 # SECRET_KEY = 'django-insecure-nq5@o+af^xr7%f=s-c-@$omm096(%w+yemk(6#%tu63n&up4d8'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', default=False)
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', default='').split(',')
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', default='*').split(',')
 
 # cloudinary.config( 
 #   cloud_name = "de0cqnzbt", 
@@ -140,7 +141,8 @@ WSGI_APPLICATION = 'ws_source.wsgi.application'
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 DATABASES = {
-    'default': env.db(),
+    'default': os.environ.get('DATABASE_URL', default='postgres://nad_2023:nad.2023@93.115.79.32:5432/nad_source')
+    #'default': env.db(),
 }
 
 
