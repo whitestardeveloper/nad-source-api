@@ -77,7 +77,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', default='django-insecure-nq5@o+af^xr7%
 DEBUG = os.environ.get('DEBUG', default=False)
 
 # ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', default='*').split(',')
-ALLOWED_HOSTS = ['93.115.79.32', 'alldaynaturel.com', 'www.alldaynaturel.com', 'localhost']
+ALLOWED_HOSTS = ['93.115.79.32', 'alldaynaturel.com', 'www.alldaynaturel.com', 'localhost', '*']
 # cloudinary.config( 
 #   cloud_name = "de0cqnzbt", 
 #   api_key = "861677473894574", 
@@ -140,7 +140,8 @@ WSGI_APPLICATION = 'ws_source.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': os.environ.get('SQL_ENGINE', 'django.db.backends.sqlite3'),
+        # 'ENGINE': os.environ.get('SQL_ENGINE', 'django.db.backends.sqlite3'),
+        'ENGINE': os.environ.get('SQL_ENGINE', 'django.db.backends.postgresql_psycopg2'),
         'NAME': os.environ.get('SQL_DATABASE', os.path.join(BASE_DIR, 'db.sqlite3')),
         'USER': os.environ.get('SQL_USER', 'user'),
         'PASSWORD': os.environ.get('SQL_PASSWORD', 'password'),
