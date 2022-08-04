@@ -76,8 +76,8 @@ SECRET_KEY = os.environ.get('SECRET_KEY', default='django-insecure-nq5@o+af^xr7%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', default=False)
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', default='*').split(',')
-
+# ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', default='*').split(',')
+ALLOWED_HOSTS = ['93.115.79.32', 'alldaynaturel.com', 'www.alldaynaturel.com', 'localhost']
 # cloudinary.config( 
 #   cloud_name = "de0cqnzbt", 
 #   api_key = "861677473894574", 
