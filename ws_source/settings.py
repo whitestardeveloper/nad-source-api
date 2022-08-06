@@ -78,8 +78,9 @@ DEBUG = os.environ.get('DEBUG', default=False)
 
 # ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', default='*').split(',')
 # ALLOWED_HOSTS = ['93.115.79.32', 'alldaynaturel.com', 'www.alldaynaturel.com', 'localhost', '*']
-ALLOWED_HOSTS = ['*']
-CSRF_TRUSTED_ORIGINS = ['*']
+ALLOWED_HOSTS = ['93.115.79.32', 'alldaynaturel.com', 'www.alldaynaturel.com', 'localhost', '*']
+CSRF_TRUSTED_ORIGINS = ['https://93.115.79.32', 'https://alldaynaturel.com', 'https://www.alldaynaturel.com', 'https://localhost','http://93.115.79.32', 'http://alldaynaturel.com', 'http://www.alldaynaturel.com', 'http://localhost']
+
 
 # cloudinary.config( 
 #   cloud_name = "de0cqnzbt", 
