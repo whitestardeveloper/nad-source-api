@@ -11,6 +11,16 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.core.exceptions import ObjectDoesNotExist
 from django_filters.rest_framework import DjangoFilterBackend
+# from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
+# from allauth.socialaccount.providers.oauth2.client import OAuth2Client
+# from dj_rest_auth.registration.views import SocialLoginView
+
+from rest_framework.utils import json
+from rest_framework.views import APIView
+from rest_framework.response import Response
+import requests
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth.models import User
 
 
 def index(request):
@@ -26,7 +36,7 @@ class CategoriesViewSet(generics.ListCreateAPIView):
         DjangoFilterBackend,
     ]
     search_fields = ['name',]
-    filterset_fields = ['parent_id','name','is_leaf','level']
+    filterset_fields = ['parent_id','name','level']
 
     def get(self, request, *args, **kwargs):
         root_nodes = Category.objects.all().get_cached_trees()
@@ -139,3 +149,84 @@ class ProductDetailViewSet(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ProductDetailSerializer
     lookup_field = 'id'
     # filterset_fields = ['category_id',]
+
+###############
+# class GoogleLogin(SocialLoginView): # if you want to use Authorization Code Grant, use this
+#     adapter_class = GoogleOAuth2Adapter
+#     callback_url = "http://localhost:8000" ###CALLBACK_URL_YOU_SET_ON_GOOGLE
+#     client_class = OAuth2Client
+
+# class GoogleLogin(SocialLoginView): # if you want to use Implicit Grant, use this
+#     adapter_class = GoogleOAuth2Adapter
+#     def post(self, request, *args, **kwargs):
+#             response = super(GoogleLogin, self).post(request, *args, **kwargs)
+#             token = Token.objects.get(key=response.data['key'])
+#             return Response({'token': token.key, 'id': token.user_id})
+
+# class GoogleLogin(SocialLoginView):
+#     adapter_class = GoogleOAuth2Adapter
+
+
+
+class GoogleLogin(APIView):
+    def post(self, request):
+        payload = {'access_token': request.data.get("token")}  # validate the token
+        r = requests.get('https://www.googleapis.com/oauth2/v2/userinfo', params=payload)
+        data = json.loads(r.text)
+
+        if 'error' in data:
+            content = {'message': 'wrong google token / this google token is already expired.'}
+            return Response(content)
+
+        # create user if not exist
+        try:
+            user = User.objects.get(email=data['email'])
+        except User.DoesNotExist:
+            user = User()
+            user.username = data['email']
+            # provider random default password
+            user.password = make_password(BaseUserManager().make_random_password())
+            user.email = data['email']
+            user.save()
+
+        token = RefreshToken.for_user(user)  # generate token without username & password
+        response = {}
+        response['user_name'] = user.username
+        response['user_last_name'] = user.last_name
+        response['user_e_mail'] = user.email
+        # response['token_exp'] = str(token.exp)
+        response['access_token'] = str(token.access_token)
+        response['refresh_token'] = str(token)
+        return Response(response)
+
+
+class AppleLogin(APIView):
+    def post(self, request):
+        payload = {'access_token': request.data.get("token")}  # validate the token
+        r = requests.get('https://appleid.apple.com/auth/token', params=payload)
+        data = json.loads(r.text)
+
+        if 'error' in data:
+            content = {'message': 'wrong google token / this google token is already expired.'}
+            return Response(content)
+
+        # create user if not exist
+        try:
+            user = User.objects.get(email=data['email'])
+        except User.DoesNotExist:
+            user = User()
+            user.username = data['email']
+            # provider random default password
+            user.password = make_password(BaseUserManager().make_random_password())
+            user.email = data['email']
+            user.save()
+
+        token = RefreshToken.for_user(user)  # generate token without username & password
+        response = {}
+        response['user_name'] = user.username
+        response['user_last_name'] = user.last_name
+        response['user_e_mail'] = user.email
+        # response['token_exp'] = str(token.exp)
+        response['access_token'] = str(token.access_token)
+        response['refresh_token'] = str(token)
+        return Response(response)

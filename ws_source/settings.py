@@ -15,6 +15,7 @@ import dj_database_url
 from pathlib import Path
 import warnings
 import environ, os
+from datetime import timedelta
 # import pyrebase
 # import firebase_admin
 # from firebase_admin import credentials
@@ -77,10 +78,30 @@ SECRET_KEY = os.environ.get('SECRET_KEY', default='django-insecure-nq5@o+af^xr7%
 DEBUG = os.environ.get('DEBUG', default=False)
 
 # ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', default='*').split(',')
-# ALLOWED_HOSTS = ['93.115.79.32', 'alldaynaturel.com', 'www.alldaynaturel.com', 'localhost', '*']
-ALLOWED_HOSTS = ['93.115.79.32', 'alldaynaturel.com', 'www.alldaynaturel.com', 'localhost', '*']
-CSRF_TRUSTED_ORIGINS = ['https://93.115.79.32', 'https://alldaynaturel.com', 'https://www.alldaynaturel.com', 'https://localhost','http://93.115.79.32', 'http://alldaynaturel.com', 'http://www.alldaynaturel.com', 'http://localhost']
-
+# ALLOWED_HOSTS = ['89.252.135.196', 'alldaynaturel.com', 'www.alldaynaturel.com', 'localhost', '*']
+ALLOWED_HOSTS = ['89.252.135.196', 'alldaynaturel.com', 'www.alldaynaturel.com', 'localhost', '*']
+CSRF_TRUSTED_ORIGINS = [
+    'https://89.252.135.196', 
+    'https://alldaynaturel.com', 
+    'https://www.alldaynaturel.com', 
+    'https://localhost',
+    'http://89.252.135.196', 
+    'http://alldaynaturel.com', 
+    'http://www.alldaynaturel.com', 
+    'http://localhost'
+]
+CORS_ALLOWED_ORIGINS = [
+    'https://89.252.135.196', 
+    'https://alldaynaturel.com', 
+    'https://www.alldaynaturel.com', 
+    'https://localhost:8000',
+    'http://89.252.135.196', 
+    'http://alldaynaturel.com', 
+    'http://www.alldaynaturel.com', 
+    'http://localhost:8000',
+    'https://127.0.0.1:8000',
+    'http://127.0.0.1:8000',
+]
 
 # cloudinary.config( 
 #   cloud_name = "de0cqnzbt", 
@@ -99,14 +120,84 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
+    'rest_framework_swagger',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.apple',
+    'dj_rest_auth.registration',
     'rest_framework',
+    'rest_framework_simplejwt',
+    'rest_framework.authtoken',
+    'dj_rest_auth',
     'django_filters',
     'django_firebase',
     'multiselectfield',
     'corsheaders',
     # 'cloudinary',
-    'source'
+    'source',
 ]
+
+SITE_ID = 1
+
+REST_USE_JWT = True
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=365),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=365),
+    # 'ROTATE_REFRESH_TOKENS': False,
+    # 'BLACKLIST_AFTER_ROTATION': False,
+    # 'UPDATE_LAST_LOGIN': False,
+
+    # 'ALGORITHM': 'HS256',
+    # 'SIGNING_KEY': SECRET_KEY,
+    # 'VERIFYING_KEY': None,
+    # 'AUDIENCE': None,
+    # 'ISSUER': None,
+    # 'JWK_URL': None,
+    # 'LEEWAY': 0,
+
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    # 'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
+    # 'USER_ID_FIELD': 'id',
+    # 'USER_ID_CLAIM': 'user_id',
+    # 'USER_AUTHENTICATION_RULE': 'rest_framework_simplejwt.authentication.default_user_authentication_rule',
+
+    # 'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+    # 'TOKEN_TYPE_CLAIM': 'token_type',
+    # 'TOKEN_USER_CLASS': 'rest_framework_simplejwt.models.TokenUser',
+
+    # 'JTI_CLAIM': 'jti',
+
+    # 'SLIDING_TOKEN_REFRESH_EXP_CLAIM': 'refresh_exp',
+    # 'SLIDING_TOKEN_LIFETIME': timedelta(minutes=5),
+    # 'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
+}
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    },
+     "apple": {
+        "APP": {
+            # Your service identifier.
+            "client_id":"com.localhost:8000.social-login-1234",
+            # The Key ID (visible in the "View Key Details" page).
+            "secret": "sociallogintest1234",
+            "key": "ABCDEF",
+            "certificate_key": """----BEGIN PRIVATE KEY----
+KJASDHKASDHKASJHDASKJHDKJASHDHJA----END PRIVATE KEY----"""
+        }
+    },
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -119,6 +210,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+SOCIALACCOUNT_EMAIL_VERIFICATION = "none"
+SOCIALACCOUNT_EMAIL_REQUIRED = False
 
 ROOT_URLCONF = 'ws_source.urls'
 
@@ -134,6 +228,9 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            'libraries' : {
+                'staticfiles': 'django.templatetags.static', 
+            }
         },
     },
 ]
@@ -193,6 +290,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': ('rest_framework_simplejwt.authentication.JWTAuthentication',),
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
     'DEFAULT_PAGINATION_CLASS': 'ws_source.custom.CustomPagination',
     'PAGE_SIZE': 20
