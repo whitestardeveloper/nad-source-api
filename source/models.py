@@ -73,7 +73,7 @@ class Product(models.Model):
     description = models.TextField(null=True,blank=True)
     priority = models.SmallIntegerField(default=1)
     altarnative_products = models.ManyToManyField("self", blank=True, through='AltarnativeProduct', symmetrical=True)
-    rozets = MultiSelectField(choices=PRODUCT_ROZETS)
+    rozets = MultiSelectField(choices=PRODUCT_ROZETS, max_choices=5)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     image = models.ImageField(upload_to='products', null=True, blank=True)
