@@ -82,10 +82,17 @@ class ProductDetailSerializer(serializers.ModelSerializer):
         data = [{'id':ingredients.id, 'name':ingredients.name, 'description': ingredients.description } for ingredients in model.ingredients.all().order_by('productmaterial__priority')]
         return data
 
+    favorite = serializers.SerializerMethodField(read_only=True)
+    def get_favorite(self, model):
+        if self.context['request'].user.id is None:
+            return False
+        else:
+            return model.favorite.filter(id=self.context['request'].user.id).exists()
+
     # altarnative_products = serializers.SerializerMethodField()
     class Meta:
         model = Product
-        fields= ['id','name', 'description', 'image','category_id','created_at','updated_at','rozets','ingredients','altarnative_products']
+        fields= ['id','name', 'description', 'image','category_id','created_at','updated_at','rozets', 'favorite','ingredients','altarnative_products']
         depth = 1
 
 

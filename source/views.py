@@ -2,8 +2,12 @@ from django.http import HttpResponse
 from .models import Category, Material, Product
 from .serializers import CategoryListSerializer, MaterialListSerializer, ProductListSerializer, ProductDetailSerializer
 import requests
+from django.shortcuts import get_object_or_404
+from django.core import serializers
 import os
 from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import APIException
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import generics,generics,filters
@@ -19,7 +23,6 @@ from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.hashers import make_password
 from rest_framework.utils import json
 from rest_framework.views import APIView
-from rest_framework.response import Response
 import requests
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.models import User
@@ -142,6 +145,68 @@ class ProductViewSet(generics.ListCreateAPIView):
     ]
     search_fields = ['name',]
     filterset_fields = ['category_id',]
+
+
+#######################
+@method_decorator(csrf_exempt, name='dispatch')
+def product_favorite(request, id):
+    product = Product.objects.get(pk=id)
+    if request.user.id is None:
+        result = { 'message': 'User not found.' }
+        response = HttpResponse(json.dumps(result), content_type='application/json')
+        response.status_code = 400
+        return response
+    else:
+        result = {}
+        if product.favorite.filter(id=request.user.id).exists():
+            product.favorite.remove(request.user)
+            result = { 'state': 'Removed Favorite' } 
+        else:
+            product.favorite.add(request.user)
+            result = { 'state': 'Added Favorite' } 
+        response = HttpResponse(json.dumps(result), content_type='application/json')
+        response.status_code = 201
+        return response
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+def favorite_product_list(request):
+    if request.user.id is None:
+        result = { 'message': 'User not found.' }
+        response = HttpResponse(json.dumps(result), content_type='application/json')
+        response.status_code = 400
+        return response
+    else:
+        user = request.user
+        favorite_products = serializers.serialize('json',user.favorite.all())
+        # data = []
+        # for n in favorite_products:
+        #     data.append(n.fields)
+        #     print(json.dumps(n))
+        response = HttpResponse(favorite_products, content_type='application/json')
+        response.status_code = 201
+        return response
+
+
+    # product = Product.objects.get(pk=id)
+    # print(product)
+    # print(request.user)
+    # if request.user.id is None:
+    #     result = { 'message': 'User not found.' }
+    #     response = HttpResponse(json.dumps(result), content_type='application/json')
+    #     response.status_code = 400
+    #     return response
+    # else:
+    #     result = {}
+    #     if product.favorite.filter(id=request.user.id).exists():
+    #         product.favorite.remove(request.user)
+    #         result = { 'state': 'Removed Favorite' } 
+    #     else:
+    #         product.favorite.add(request.user)
+    #         result = { 'state': 'Added Favorite' } 
+    #     response = HttpResponse(json.dumps(result), content_type='application/json')
+    #     response.status_code = 201
+    #     return response
 
 
 ################

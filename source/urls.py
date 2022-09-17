@@ -9,6 +9,8 @@ urlpatterns = [
     path('categories/<str:id>', views.CategoryDetailViewSet.as_view()),
     path('products', views.ProductViewSet.as_view()),
     path('products/<str:id>', views.ProductDetailViewSet.as_view()),
+    path('favorite-products',  views.favorite_product_list, name='favorite_product_list'),
+    path('products/<str:id>/favorite', views.product_favorite, name='product_favorite'),
     path('materials', views.MaterialsViewSet.as_view()),
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),

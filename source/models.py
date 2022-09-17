@@ -1,5 +1,6 @@
 from tabnanny import verbose
 from django.db import models
+from django.contrib.auth.models import User
 from multiselectfield import MultiSelectField
 from mptt.models import MPTTModel, TreeForeignKey
 from django_cleanup import cleanup
@@ -77,6 +78,8 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     image = models.ImageField(upload_to='products', null=True, blank=True)
+    favorite = models.ManyToManyField(User, related_name='favorite', null=True, blank=True)
+
 
     def __str__(self):
         return self.name
