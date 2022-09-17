@@ -15,6 +15,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 # from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 # from dj_rest_auth.registration.views import SocialLoginView
 
+from django.contrib.auth.base_user import BaseUserManager
+from django.contrib.auth.hashers import make_password
 from rest_framework.utils import json
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -194,7 +196,6 @@ class GoogleLogin(APIView):
         response['user_name'] = user.username
         response['user_last_name'] = user.last_name
         response['user_e_mail'] = user.email
-        # response['token_exp'] = str(token.exp)
         response['access_token'] = str(token.access_token)
         response['refresh_token'] = str(token)
         return Response(response)
