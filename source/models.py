@@ -106,6 +106,18 @@ class AltarnativeProduct(models.Model):
         unique_together = ('product', 'altarnative_product')
         ordering=['priority']
 
+
+class Review(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    comment = models.TextField(max_length=1000)
+    rating = models.SmallIntegerField(default=0)
+    created = models.DateField(auto_now_add=True)
+    updated = models.DateField(auto_now=True)
+
+    def __str__(self):
+        return self.user.username
+
 # class ProductCategory(models.Model):
 #     product = models.ForeignKey(Product, on_delete=models.CASCADE)
 #     category = models.ForeignKey(Category, on_delete=models.CASCADE)

@@ -19,6 +19,8 @@ from source.views import GoogleLogin
 # from source.views import google_token
 from rest_framework_swagger.views import get_swagger_view
 from source.views import AppleLogin
+from dj_rest_auth.views import LoginView, LogoutView
+
 
 schema_view = get_swagger_view(title='NAD SOURCE API')
 
@@ -29,9 +31,10 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
     path('accounts/', include('allauth.urls')),
     path('auth/', include('dj_rest_auth.urls')),
+    # path('login/', LoginView.as_view(), name='login'),
     path('auth/registration/', include('dj_rest_auth.registration.urls')),
     path('auth/google', GoogleLogin.as_view(), name='google_login'),
-    path('auth/apple', AppleLogin.as_view(), name='google_login'),
+    path('auth/apple', AppleLogin.as_view(), name='apple_login'),
     # path('auth/google', google_token, name='google_login'),
 
     path('api/', include('source.urls')),

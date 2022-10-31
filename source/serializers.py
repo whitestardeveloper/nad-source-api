@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import Category, Material, Product, AltarnativeProduct, ProductMaterial
+from .models import Category, Material, Product, AltarnativeProduct, ProductMaterial, Review
+from django.contrib.auth.models import User
 
 class MaterialListSerializer(serializers.ModelSerializer):
     class Meta:
@@ -9,7 +10,7 @@ class MaterialListSerializer(serializers.ModelSerializer):
 class ProductListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields= ['id', 'name','description', 'category_id', 'image','priority']
+        fields= ['id', 'name','description', 'category_id', 'image', 'priority']
 
 
 
@@ -24,6 +25,23 @@ class AltarnativeProductListSerializer(serializers.ModelSerializer):
     class Meta:
         model = AltarnativeProduct
         fields= '__all__'
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+
+    user = serializers.SerializerMethodField()
+    def get_user(self, model):
+        details = {}
+        details['id'] = model.user.id
+        details['email'] = model.user.email
+        details['username'] = model.user.username
+        details['first_name'] = model.user.first_name
+        details['last_name'] = model.user.last_name
+        return details
+    class Meta:
+        model = Review
+        fields = ('id', 'comment', 'rating', 'user', 'created', 'updated')
+        # depth = 1
 
 class ProductDetailSerializer(serializers.ModelSerializer):
     # ingredients = serializers.SerializerMethodField()
@@ -89,10 +107,19 @@ class ProductDetailSerializer(serializers.ModelSerializer):
         else:
             return model.favorite.filter(id=self.context['request'].user.id).exists()
 
+    reviews = serializers.SerializerMethodField(read_only=True)
+    def get_reviews(self, model):
+        if self.context['request'].user.id is None:
+            return []
+        else:
+            review = ReviewSerializer(Review.objects.filter(product=model), many=True)
+            return review.data
+
+
     # altarnative_products = serializers.SerializerMethodField()
     class Meta:
         model = Product
-        fields= ['id','name', 'description', 'image','category_id','created_at','updated_at','rozets', 'favorite','ingredients','altarnative_products']
+        fields= ['id','name', 'description', 'image','category_id','created_at','updated_at','rozets','favorite', 'reviews', 'ingredients','altarnative_products']
         depth = 1
 
 
@@ -102,6 +129,16 @@ class CategoryListSerializer(serializers.ModelSerializer):
         model = Category
         fields = ['id', 'name', 'image', 'parent_id','priority']
         depth = 1
+
+
+class FavoriteProductList(serializers.ModelSerializer):  
+    favorite_products = serializers.SerializerMethodField()
+    def get_favorite_products(self, model):
+        return ProductListSerializer(model, many=True).data
+
+    class Meta: 
+        model = Product 
+        fields = ['favorite_products']
 
 # class CategoryAllSerializer(CategorySerializer):
 #     class Meta:

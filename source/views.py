@@ -1,10 +1,11 @@
 from django.http import HttpResponse
-from .models import Category, Material, Product
-from .serializers import CategoryListSerializer, MaterialListSerializer, ProductListSerializer, ProductDetailSerializer
+from .models import Category, Material, Product, Review
+from .serializers import CategoryListSerializer, FavoriteProductList, MaterialListSerializer, ProductListSerializer, ProductDetailSerializer, ReviewSerializer
 import requests
 from django.shortcuts import get_object_or_404
 from django.core import serializers
 import os
+import datetime
 from rest_framework.exceptions import ValidationError
 from rest_framework.exceptions import APIException
 from rest_framework import status
@@ -174,18 +175,31 @@ def favorite_product_list(request):
     if request.user.id is None:
         result = { 'message': 'User not found.' }
         response = HttpResponse(json.dumps(result), content_type='application/json')
-        response.status_code = 400
+        response.status_code = 403
         return response
     else:
         user = request.user
-        favorite_products = serializers.serialize('json',user.favorite.all())
+        # print(user.favorite)
+        favorite_products = user.favorite.all()
         # data = []
         # for n in favorite_products:
         #     data.append(n.fields)
         #     print(json.dumps(n))
-        response = HttpResponse(favorite_products, content_type='application/json')
+        response = HttpResponse(json.dumps(FavoriteProductList(favorite_products).data), content_type='application/json')
+        # response = HttpResponse(favorite_products, content_type='application/json')
         response.status_code = 201
         return response
+
+
+        #        user = request.user
+        # print(user)
+        # # favorite_products = serializers.serialize('json', user.favorite.all())
+        # favorite_products = FavoriteProductList(user.favorite.all())
+        # # data = []
+        # # for n in favorite_products:
+        # #     data.append(n.fields)
+        # #     print(json.dumps(n))
+        # response = HttpResponse(json.dumps(favorite_products.data), content_type='application/json')
 
 
     # product = Product.objects.get(pk=id)
@@ -296,3 +310,82 @@ class AppleLogin(APIView):
         response['access_token'] = str(token.access_token)
         response['refresh_token'] = str(token)
         return Response(response)
+
+
+@api_view(['POST'])
+@method_decorator(csrf_exempt, name='dispatch')
+def add_review(request, id):
+    if request.user.id is None:
+        result = { 'message': 'User not found.' }
+        response = HttpResponse(json.dumps(result), content_type='application/json')
+        response.status_code = 403
+        return response
+    else:
+        product = Product.objects.get(id=id)
+        if request.method == "POST":
+            response = {}
+            body = json.loads(request.body)
+            review = Review.objects.create(product=product, user=request.user, comment=body.get('comment'), rating=body.get('rating'))
+            response = HttpResponse(json.dumps(ReviewSerializer(review).data), content_type='application/json')
+            response.status_code = 201
+            return response
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+def edit_review(request, product_id, review_id):
+    if request.user.id is None:
+        result = { 'message': 'User not found.' }
+        response = HttpResponse(json.dumps(result), content_type='application/json')
+        response.status_code = 403
+        return response
+    else:
+        try:
+            product = Product.objects.get(id=product_id)
+            review = Review.objects.get(product=product, id=review_id)
+            response={}
+            if review is None:
+                response = HttpResponse(json.dumps({'message': 'Review not found'}), content_type='application/json')
+                response.status_code = 404
+            if request.method == 'PUT':
+                if request.user == review.user:
+                    body = json.loads(request.body)
+                    review.comment = body.get('comment')
+                    review.rating = body.get('rating')
+                    review.updated = datetime.datetime.now()
+                    review.save()
+                    response = HttpResponse(json.dumps(ReviewSerializer(review).data), content_type='application/json')
+                    response.status_code = 201
+                else:
+                    response = HttpResponse(json.dumps({'message': 'This review is not yours'}), content_type='application/json')
+                    response.status_code = 403    
+                return response
+
+            if request.method == 'DELETE':
+                if request.user == review.user:
+                    review.delete()
+                    response = HttpResponse(json.dumps({'message': 'Success delete review'}), content_type='application/json')
+                    response.status_code = 204
+                else:
+                    response = HttpResponse(json.dumps({'message': 'This review is not yours'}), content_type='application/json')
+                    response.status_code = 403    
+                return response
+        except Review.DoesNotExist:
+            response = HttpResponse(json.dumps({'message': 'Review not found'}), content_type='application/json')
+            response.status_code = 404
+            return response
+
+
+        
+
+
+
+# @method_decorator(csrf_exempt, name='dispatch')
+# def delete_review(request, product_id, review_id):
+# 	if request.user.is_authenticated:
+# 		product = Product.objects.get(id=product_id)
+# 		review = Review.objects.get(product=product, id=review_id)
+# 		if request.user == review.user:
+# 			review.delete()
+# 		return HttpResponse(status=204)
+# 	else:
+#          return Response({'message': _('User not found!')}, status=status.HTTP_403_FORBIDDEN)

@@ -43,6 +43,8 @@ class AltarnativeProductInline(admin.TabularInline):
 class ProductAdmin(admin.ModelAdmin):
     # search_fields = ("id", )
     # autocomplete_fields = ('ingredients',)
+    # list_display = ('name', 'title', 'view_birth_date')
+    exclude = ('favorite',)
     search_fields = ['name',]
     filter_horizontal = ('ingredients', 'altarnative_products')
     inlines = (ProductMaterialInline, AltarnativeProductInline)
