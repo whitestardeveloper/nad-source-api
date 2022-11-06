@@ -110,8 +110,8 @@ class AltarnativeProduct(models.Model):
 class Review(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    comment = models.TextField(max_length=1000)
-    rating = models.SmallIntegerField(default=0)
+    comment = models.TextField(max_length=2000, null=True, blank=True)
+    rating = models.SmallIntegerField(null=True, blank=True)
     created = models.DateField(auto_now_add=True)
     updated = models.DateField(auto_now=True)
 
